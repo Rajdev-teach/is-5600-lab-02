@@ -31,3 +31,5 @@ const userContent = `
 {"id":30,"user":{"firstname":"Gates","lastname":"Reinbeck","email":"greinbeckt@biblegateway.com","address":"6 Stuart Plaza","city":"Fresno","state":"California","zip":"93786"},"portfolio":[{"symbol":"AJG","owned":320},{"symbol":"ED","owned":271}]}
 
 ]`;
+
+export default userContent;

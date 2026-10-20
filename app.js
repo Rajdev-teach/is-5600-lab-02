@@ -1,3 +1,8 @@
+import userContent from './data/users.js';
+import stockContent from './data/stocks-complete.js';
+
+const logos = import.meta.glob('./logos/*.svg', { eager: true, as: 'url' });
+
 document.addEventListener('DOMContentLoaded', () => {
     // function will go here
     //  note add this inside of our DOMContentLoaded event handler
@@ -15,10 +20,14 @@ const saveButton = document.querySelector('#btnSave')
     // find the index of the user in the data array 
     const userId = document.querySelector('#userID').value;
     const userIndex = userData.findIndex(user => user.id == userId);
+    if (userIndex < 0) return;
     // remove the user from the array
     userData.splice(userIndex, 1);
     // render the user list
     generateUserList(userData, stocksData);
+    document.querySelector('.userEntry').reset();
+    document.querySelector('#userID').value = '';
+    document.querySelector('.portfolio-list').innerHTML = '';
   });
 
 generateUserList(userData, stocksData)
@@ -61,7 +70,7 @@ saveButton.addEventListener('click', (event) => {
     });
 
      // register the event listener on the list
-  userList.addEventListener('click', (event) => handleUserListClick(event, users, stocks));
+  userList.onclick = (event) => handleUserListClick(event, users, stocks);
   }
 
 /**
@@ -74,6 +83,7 @@ function handleUserListClick(event, users, stocks) {
     // find the user in the userData array
     // we use a "truthy" comparison here because the user id is a number and the event target id is a string
     const user = users.find(user => user.id == userId);
+    if (!user) return;
     // populate the form with the user's data
     populateForm(user);
     renderPortfolio(user, stocks);
@@ -106,12 +116,12 @@ function renderPortfolio(user, stocks) {
     });
 
 
-     portfolioDetails.addEventListener('click', (event) => {
+     portfolioDetails.onclick = (event) => {
     // let's make sure we only handle clicks on the buttons
     if (event.target.tagName === 'BUTTON') {
       viewStock(event.target.id, stocks);
     }
-  });
+  };
 
   }
 
@@ -141,13 +151,18 @@ function viewStock(symbol, stocks) {
     if (stockArea) {
         // find the stock object for this symbol
         const stock = stocks.find( function (s) { return s.symbol == symbol;});
+        if (!stock) return;
 
         document.querySelector('#stockName').textContent = stock.name;
         document.querySelector('#stockSector').textContent = stock.sector;
         document.querySelector('#stockIndustry').textContent = stock.subIndustry;
         document.querySelector('#stockAddress').textContent = stock.address;
 
-        document.querySelector('#logo').textContent = 'logo/${symbol}.svg';
+        const logo = document.querySelector('#logo');
+        const source = logos[`./logos/${symbol}.svg`];
+        if (source) logo.src = source;
+        else logo.removeAttribute('src');
+        logo.alt = `${symbol} logo`;
     }
   }
 
